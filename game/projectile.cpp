@@ -42,3 +42,4 @@ char Projectile::getRenderChar() const {
     return '*';  // símbolo para el proyectil
 }
 
+

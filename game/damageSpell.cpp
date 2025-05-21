@@ -8,6 +8,6 @@ DamageSpell::DamageSpell(const std::string& name, int manaCost, int range, int d
 int DamageSpell::getDamage() const { return damage; }
 
 void DamageSpell::cast(Player& caster, GameWorld& /*world*/) const {
-    std::cout << caster.getName() << " casts " << name
+    std::cerr << caster.getName() << " casts " << name
               << " and deals " << damage << " damage (generic spell)!\n";
 }

@@ -25,6 +25,7 @@ bool poll_input(
 );
 bool poll_key(char& out);
 bool poll_mouse(int& mouse_x, int& mouse_y, bool& left_button);
+void draw_text(int x, int y, const std::string& text);
 
 } // namespace ascii
 

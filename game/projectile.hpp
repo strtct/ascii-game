@@ -23,5 +23,6 @@ private:
     Position velocity;
     int damage;
     int remainingRange;
+	int traveled = 0;
     //Team team;
 };

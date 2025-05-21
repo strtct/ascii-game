@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "player.hpp"
 #include "projectile.hpp"
-
+#include "ui_layer.hpp"
 GameWorld::GameWorld() {
 	generateTerrain();
 }
@@ -39,9 +39,8 @@ int GameWorld::getMapWidth() const { return MAP_WIDTH; }
 int GameWorld::getMapHeight() const { return MAP_HEIGHT; }
 
 void GameWorld::renderAll(const Player& player) const {
-	ascii::clear();
 	const int VIEW_WIDTH = ascii::WIDTH;
-	const int VIEW_HEIGHT = ascii::HEIGHT;
+	const int VIEW_HEIGHT = ascii::HEIGHT - ui_layer::UI_PANEL_HEIGHT;
 
 	Position playerPos = player.getPosition();
 	// Calcular el offset para centrar la cámara en el jugador
@@ -81,7 +80,6 @@ void GameWorld::renderAll(const Player& player) const {
             ascii::draw_char(screenX, screenY, e->getRenderChar());
         }
     }
-	ascii::render();
 
 }
 
@@ -91,8 +89,9 @@ void GameWorld::renderAll(const Player& player) const {
         for (int x = 0; x < MAP_WIDTH; ++x) {
             	int r = rand() % 100;
         	    if (r < 5) terrainLayer[y][x] = ',';   // 5%
-    	        else if (r < 10) terrainLayer[y][x] = '\''; // 5%
-	            else if (r < 15) terrainLayer[y][x] = '`';  // 5%
+    	        else if (r < 2) terrainLayer[y][x] = '\''; // 5%
+	            else if (r < 4) terrainLayer[y][x] = '`';  // 5%
+	            else if (r < 6) terrainLayer[y][x] = '~';  // 5%
             	else terrainLayer[y][x] = ' '; // resto
         	}
     	}

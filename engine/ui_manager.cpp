@@ -42,6 +42,27 @@ namespace ui {
     	std::cerr << "entra en on_mouse_click" << std::endl;
 	    log("Click (" + std::to_string(x) + ", " + std::to_string(y) + ")");
 	}
+	void draw_panel(int x, int y, int width, int height, const std::string& title) {
+	    for (int i = 0; i < width; ++i) {
+    	    ascii::draw_char(x + i, y, '-');                     // Top border
+        	ascii::draw_char(x + i, y + height - 1, '-');        // Bottom border
+    	}
+   		for (int i = 0; i < height; ++i) {
+        	ascii::draw_char(x, y + i, '|');                     // Left border
+        	ascii::draw_char(x + width - 1, y + i, '|');         // Right border
+    	}
+
+    	ascii::draw_char(x, y, '+');
+	    ascii::draw_char(x + width - 1, y, '+');
+    	ascii::draw_char(x, y + height - 1, '+');
+    	ascii::draw_char(x + width - 1, y + height - 1, '+');
+
+    // Title (centered if it fits)
+    	if (!title.empty() && title.size() < static_cast<size_t>(width - 4)) {
+        	int titleX = x + (width - title.size()) / 2;
+        	ascii::draw_text(titleX, y, title);
+   		}
+	}
 
 } // namespace ui
 

@@ -14,6 +14,7 @@ void draw_log_panel();
 
 void add_log(const std::string& message);
 void on_mouse_click(int x, int y);
+void draw_panel(int x, int y, int width, int height, const std::string& title = "");
 
 
 } // namespace ui

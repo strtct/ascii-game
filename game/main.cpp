@@ -8,6 +8,8 @@
 #include "player.hpp"
 #include "position.hpp"
 #include "gameWorld.hpp"
+#include "fireballSpell.h"
+#include "ui_layer.hpp"
 int main() {
 	
 	GameWorld world;
@@ -22,7 +24,7 @@ int main() {
     Position centerPos(centerX, centerY, centerZ);
 
 	Player player ("Stratcat", 1, 10, 22, 10, 14, 14, centerPos);
-    
+    FireballSpell fireball; 
 	ascii::init();
 
 	world.addEntity(&player);
@@ -37,12 +39,16 @@ int main() {
     while (running) {
 
         // Dibujar la UI (log)
-        ui::draw_log_panel();
+		//ui::draw_log_panel();
 
-        // Mostrar en pantalla
+		ascii::clear();
+        
+		// Mostrar en pantalla
 		world.updateAll();
 		world.renderAll(player);
-
+		ui_layer::draw_player_info(player);
+		
+		ascii::render();
         // Procesar entrada
 		char key;
 		bool got_key, got_mouse;
@@ -55,6 +61,7 @@ int main() {
 					case 's': player.move(0,1,0,world);  break;
 					case 'a': player.move(-1,0,0,world);  break;
 					case 'd': player.move(1,0,0,world);  break;
+					case ' ': player.castSpell(fireball, world);
 					case 'q': running = false; break;
 					default:
 						ui::add_log(std::string("Tecla: ") +key);

@@ -155,4 +155,10 @@ bool poll_mouse(int& mouse_x, int& mouse_y, bool& left_button) {
 #endif
 }
 
+void draw_text(int x, int y, const std::string& text) {
+    for (size_t i = 0; i < text.size(); ++i) {
+        draw_char(x + i, y, text[i]);
+    }
+}
+
 } // namespace ascii

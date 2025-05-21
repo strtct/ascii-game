@@ -3,6 +3,7 @@
 #include <vector>
 #include "position.hpp"
 #include "player.hpp"
+#include "ui_layer.hpp"
 class Entity;
 class Player;
 class GameWorld {
@@ -17,7 +18,7 @@ public:
 	int getMapWidth() const;
 	void generateTerrain();
 	static constexpr int MAP_HEIGHT = 1000;
-	static constexpr int MAP_WIDTH = 1000;
+	static constexpr int MAP_WIDTH = 1000 - ui_layer::UI_PANEL_HEIGHT;
 
 private:
     std::vector<Entity*> entities;
