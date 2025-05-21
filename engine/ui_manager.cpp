@@ -27,7 +27,7 @@ namespace ui {
     	int start_y = ascii::HEIGHT - MAX_LOG_LINES;
 	    int i = 0;
     	for (const std::string& line : log_buffer) {
-        	for (size_t j = 0; j < line.size() && j < ascii::WIDTH; ++j) {
+        	for (size_t j = 0; j < line.size() && j < static_cast<size_t>(ascii::WIDTH); ++j) {
             	ascii::draw_char(j, start_y + i, line[j]);
         	}
        		++i;

@@ -41,8 +41,8 @@ int main() {
         // Dibujar la UI (log)
 		//ui::draw_log_panel();
 
-		ascii::clear();
-        
+		ascii::update_terminal_size();
+		ascii::clear();		
 		// Mostrar en pantalla
 		world.updateAll();
 		world.renderAll(player);
