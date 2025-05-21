@@ -18,7 +18,7 @@ public:
 	int getMapWidth() const;
 	void generateTerrain();
 	static constexpr int MAP_HEIGHT = 1000;
-	static constexpr int MAP_WIDTH = 1000 - ui_layer::UI_PANEL_HEIGHT;
+	static constexpr int MAP_WIDTH = 1000;
 
 private:
     std::vector<Entity*> entities;

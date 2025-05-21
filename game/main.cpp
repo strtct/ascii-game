@@ -1,5 +1,5 @@
 #include "engine/ascii_renderer.hpp"
-#include "engine/ui_manager.hpp"
+#include "engine/ui/ui_manager.hpp"
 
 #include <thread>
 #include <chrono>
@@ -36,6 +36,8 @@ int main() {
 
     bool running = true;
 
+	ui_layer::init_components(player, ui::get_log_buffer());
+
     while (running) {
 
         // Dibujar la UI (log)
@@ -44,10 +46,11 @@ int main() {
 		ascii::update_terminal_size();
 		ascii::clear();		
 		// Mostrar en pantalla
+		ui::resize_all(int(ascii::WIDTH), int(ascii::HEIGHT));
+
 		world.updateAll();
 		world.renderAll(player);
-		ui_layer::draw_player_info(player);
-		
+		ui::draw_all();
 		ascii::render();
         // Procesar entrada
 		char key;

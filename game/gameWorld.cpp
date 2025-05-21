@@ -4,6 +4,7 @@
 #include "player.hpp"
 #include "projectile.hpp"
 #include "ui_layer.hpp"
+#include "engine/ui/ui_manager.hpp"
 GameWorld::GameWorld() {
 	generateTerrain();
 }
@@ -40,7 +41,7 @@ int GameWorld::getMapHeight() const { return MAP_HEIGHT; }
 
 void GameWorld::renderAll(const Player& player) const {
 	const int VIEW_WIDTH = ascii::WIDTH;
-	const int VIEW_HEIGHT = ascii::HEIGHT - ui_layer::UI_PANEL_HEIGHT;
+	const int VIEW_HEIGHT = ascii::HEIGHT;
 
 	Position playerPos = player.getPosition();
 	// Calcular el offset para centrar la cámara en el jugador
@@ -61,10 +62,11 @@ void GameWorld::renderAll(const Player& player) const {
 
             // Solo dibujamos si está dentro del mapa
             if (mapX >= 0 && mapX < getMapWidth() &&
-                mapY >= 0 && mapY < getMapHeight()) {
+                mapY >= 0 && mapY < getMapHeight() && 
+				!ui::is_covered(x, y)) {
 				char terrainChar = terrainLayer[mapY][mapX];
                 ascii::draw_char(x, y, terrainChar);  // Suelo base
-            } else {
+            } else if (!ui::is_covered(x, y)) {
                 ascii::draw_char(x, y, '.');  // Fuera de mapa
             }
         }
@@ -76,7 +78,8 @@ void GameWorld::renderAll(const Player& player) const {
         int screenY = pos.y - offsetY;
 
         if (screenX >= 0 && screenX < VIEW_WIDTH &&
-            screenY >= 0 && screenY < VIEW_HEIGHT) {
+            screenY >= 0 && screenY < VIEW_HEIGHT && 
+			!ui::is_covered(screenX, screenY)) {
             ascii::draw_char(screenX, screenY, e->getRenderChar());
         }
     }

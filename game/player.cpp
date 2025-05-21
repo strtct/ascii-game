@@ -3,7 +3,7 @@
 #include "spell.h"
 #include "gameWorld.hpp"
 #include <iostream>
-#include "engine/ui_manager.hpp"
+#include "engine/ui/ui_manager.hpp"
 
 // Constructor
 Player::Player(const std::string& name, int level, 
