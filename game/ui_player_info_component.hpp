@@ -8,7 +8,7 @@ using ui::UIComponent;
 
 class PlayerInfoComponent : public UIComponent {
 public:
-    PlayerInfoComponent(int x, int y, int width, int height, const Player& player);
+    PlayerInfoComponent(int x, int y, int vindex, int width, int height, const Player& player);
 
     int getX() const override;
     int getY() const override;
@@ -19,7 +19,7 @@ public:
 	void resize(int newWidth, int newHeight) override;
 
 private:
-    int x, y, width, height;
+    int x, y, vindex,width, height;
     const Player& player;
 };
 

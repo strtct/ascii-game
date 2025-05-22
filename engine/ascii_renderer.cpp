@@ -182,9 +182,7 @@ namespace ascii {
 		    if (read(STDIN_FILENO, &ch, 1) == 1) {
         		out = ch;
 		        return true;
-				std::cout << "dentro";
 			}
-		    std::cout << "fuera";
     		return false;
 		#endif
 	}

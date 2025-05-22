@@ -53,7 +53,6 @@ namespace ui {
 
 
 	void log(const std::string& message) {
-    	std::cerr << "message: " << message << std::endl;
 	    if (log_buffer.size() >= MAX_LOG_LINES) log_buffer.pop_front();
     	log_buffer.push_back(message);
 	}
@@ -63,7 +62,6 @@ namespace ui {
 	}
 
 	void on_mouse_click(int x, int y) {
-    	std::cerr << "entra en on_mouse_click" << std::endl;
 	    log("Click (" + std::to_string(x) + ", " + std::to_string(y) + ")");
 	}
 	

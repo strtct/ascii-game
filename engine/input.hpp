@@ -4,33 +4,24 @@
 
 namespace input {
 
-enum class MouseButton {
-    None,
-    Left,
-    Middle,
-    Right
-};
-
-enum class MouseAction {
-    None,
-    Press,
-    Release
-};
-
 struct MouseEvent {
+    enum class MouseButton { None, Left, Right, Middle };
+    enum class MouseAction { Press, Release };
+
+    int x = 0, y = 0;
     MouseButton button = MouseButton::None;
-    MouseAction action = MouseAction::None;
-    int x = 0;
-    int y = 0;
+    MouseAction action = MouseAction::Press;
 };
 
-// Inicializa terminal en modo raw, no bloqueante, activa seguimiento ratón
 void init();
 
-// Restaura terminal y desactiva seguimiento ratón
 void shutdown();
 
-// Lee inputs: tecla o evento ratón.
+void update_key_state();
+
 bool poll_input(char& key, bool& got_key, MouseEvent& mouse_event, bool& got_mouse);
 
+bool is_key_pressed(char key);
+
+void update_key_state();
 }

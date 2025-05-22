@@ -4,7 +4,7 @@
 #include "gameWorld.hpp"
 #include <iostream>
 #include "engine/ui/ui_manager.hpp"
-
+#include <fstream>
 // Constructor
 Player::Player(const std::string& name, int level, 
                int strength, int intelligence, int agility, 
@@ -51,6 +51,7 @@ void Player::move(int dx, int dy, float dz, const GameWorld& world) {
 	newPos.x += dx;
 	newPos.y += dy;
 	newPos.z += dz;
+
 	// Comprobar que newPos está dentro del mapa
     if (newPos.x >= 0 && newPos.x < world.getMapWidth() &&
         newPos.y >= 0 && newPos.y < world.getMapHeight()) {
@@ -58,7 +59,6 @@ void Player::move(int dx, int dy, float dz, const GameWorld& world) {
         position = newPos;
     } else {
         // efecto si intentó moverse fuera del mapa
-        ui::add_log("No puedes moverte fuera del mapa.");
     }
 
 }
@@ -67,12 +67,12 @@ void Player::castSpell(const Spell& spell, GameWorld& world) {
         currentMana -= spell.getManaCost();
         spell.cast(*this, world);
     } else {
-        std::cout << name << " does not have enough mana to cast " << spell.getName() << "!\n";
+			ui::add_log("not enough mana to cast " + spell.getName());
     }
 }
 
 void Player::render() const {
-    ascii::draw_char(position.x, position.y, '@'); // Representación simple
+    ascii::draw_char(position.x, position.y, '@'); 
 }
 
 
@@ -93,5 +93,3 @@ Position Player::getFacingDirection() const {
 void Player::setFacingDirection(const Position& dir) {
     facingDirection = dir;
 }
-
-

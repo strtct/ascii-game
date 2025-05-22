@@ -10,8 +10,12 @@
 #include "gameWorld.hpp"
 #include "fireballSpell.h"
 #include "ui_layer.hpp"
+#include <csignal>
+#include <termios.h>
+#include <unistd.h>
+#include <cstdlib>
 int main() {
-	
+
 	GameWorld world;
 	// Obtenemos el tamaño del mapa desde GameWorld
     int mapWidth = world.getMapWidth();
@@ -40,12 +44,9 @@ int main() {
 
     while (running) {
 
-        // Dibujar la UI (log)
-		//ui::draw_log_panel();
 
 		ascii::update_terminal_size();
 		ascii::clear();		
-		// Mostrar en pantalla
 		ui::resize_all(int(ascii::WIDTH), int(ascii::HEIGHT));
 
 		world.updateAll();
@@ -54,26 +55,28 @@ int main() {
 		ascii::render();
         // Procesar entrada
 		char key;
-		bool got_key, got_mouse;
+    	bool got_key, got_mouse;
 		input::MouseEvent me;
-
-		if (input::poll_input(key, got_key, me, got_mouse)) {
-    		if (got_key) {
-				switch(key) {
-					case 'w': player.move(0,-1,0,world);  break;
-					case 's': player.move(0,1,0,world);  break;
-					case 'a': player.move(-1,0,0,world);  break;
-					case 'd': player.move(1,0,0,world);  break;
-					case ' ': player.castSpell(fireball, world);
-					case 'q': running = false; break;
-					default:
-						ui::add_log(std::string("Tecla: ") +key);
-						break;
-				}
-            }
-            if (got_mouse) {
-			    ui::on_mouse_click(me.x ,me.y);
-            }
+		input::update_key_state();
+		input::poll_input(key, got_key, me, got_mouse);
+		float dx = 0, dy = 0;
+		int speed = 1;
+	    if (input::is_key_pressed('w')) dy -= speed;
+    	if (input::is_key_pressed('s')) dy += speed;
+	    if (input::is_key_pressed('a')) dx -= speed;
+    	if (input::is_key_pressed('d')) dx += speed;
+		
+	    player.move(dx, dy,0,world);  
+		
+        if (got_key) {
+    		switch (key) {
+	        	case 'q': running = false; break;
+               	case ' ': player.castSpell(fireball, world); break;
+            	    // … otros “one-shot” …
+        	}
+    	}
+	    if (got_mouse) {
+        	ui::on_mouse_click(me.x, me.y);
         }
 
         // Pequeño retraso para evitar usar 100% CPU
