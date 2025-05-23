@@ -16,6 +16,7 @@ void poll();
 
 // Retorna true si la tecla está actualmente presionada
 bool isKeyPressed(int key_code);
+bool isKeyPressedOnce(int key_code);
 
 } // namespace input
 

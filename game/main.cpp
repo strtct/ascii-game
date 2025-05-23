@@ -76,6 +76,9 @@ int main() {
     	if (input::isKeyPressed(KEY_S)) dy += speed;
 	    if (input::isKeyPressed(KEY_A)) dx -= speed;
     	if (input::isKeyPressed(KEY_D)) dx += speed;
+		if (input::isKeyPressedOnce(KEY_SPACE)) player.castSpell(fireball, world);
+		if (input::isKeyPressedOnce(KEY_ESC)) running = false;
+		
 		//if (input::is_just_pressed(' ')) player.castSpell(fireball, world);
 		//if (input::is_just_pressed('q')) {
 		//	running=false;
