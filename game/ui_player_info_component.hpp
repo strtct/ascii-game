@@ -4,6 +4,8 @@
 #include "engine/ui/ui_component.hpp"
 #include "player.hpp"
 #include "engine/ui/rect.hpp"
+#include "engine/ui/ui_type.hpp"
+
 using ui::UIComponent;
 
 class PlayerInfoComponent : public UIComponent {
@@ -17,6 +19,7 @@ public:
 	Rect getBounds() const override;
     void draw() const override;
 	void resize(int newWidth, int newHeight) override;
+    UIType getType() const override { return UIType::Blocking; }
 
 private:
     int x, y, vindex,width, height;

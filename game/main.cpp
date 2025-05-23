@@ -59,15 +59,13 @@ int main() {
 		ui::draw_all();
 		ascii::render();
         // Procesar entrada
-		char key;
-    	bool got_key, got_mouse;
 		//input::MouseEvent me;
 		//input::update_key_state();
 		try {
 		    input::poll();
 		} catch (const std::exception& e) {
 		    std::cerr << "Error en input::poll(): " << e.what() << std::endl;
-		    running = false; // O la acción que quieras para salir limpio
+		    running = false; 
 		}
 		input::poll();
 		float dx = 0, dy = 0;
@@ -79,25 +77,8 @@ int main() {
 		if (input::isKeyPressedOnce(KEY_SPACE)) player.castSpell(fireball, world);
 		if (input::isKeyPressedOnce(KEY_ESC)) running = false;
 		
-		//if (input::is_just_pressed(' ')) player.castSpell(fireball, world);
-		//if (input::is_just_pressed('q')) {
-		//	running=false;
-		//	break;
-		//}
 	    player.move(dx, dy,0,world);  
 		
-        //if (got_key) {
-    	//	switch (key) {
-	    //    	case 'q': running = false; break;
-        //       	case ' ': player.castSpell(fireball, world); break;
-            	    // … otros “one-shot” …
-        //	}
-    	//}
-
-	    //if (got_mouse) {
-        //	ui::on_mouse_click(me.x, me.y);
-        //}
-
         // Pequeño retraso para evitar usar 100% CPU
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }

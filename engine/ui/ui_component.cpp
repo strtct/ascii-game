@@ -1,5 +1,6 @@
 #include "rect.hpp"
 #include "../ascii_renderer.hpp"
+#include "ui_component.hpp"
 class UIComponent {
 
 	public:
@@ -10,7 +11,7 @@ class UIComponent {
     	virtual int getY() const = 0;
 	    virtual int getWidth() const = 0;
     	virtual int getHeight() const = 0;
-
+		virtual UIType getType() const = 0;
 	    // Función para dibujar el componente
     	virtual void draw() const = 0;
 

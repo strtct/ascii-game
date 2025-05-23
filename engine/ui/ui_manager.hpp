@@ -11,6 +11,8 @@ namespace ui {
 void init();
 void shutdown();
 
+const std::vector<std::shared_ptr<UIComponent>>& get_components();
+
 void log(const std::string& message);
 const std::deque<std::string>& get_log_buffer();
 

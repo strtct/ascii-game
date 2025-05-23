@@ -14,6 +14,7 @@ public:
     int getWidth() const {return width;};
     int getHeight() const {return height;};
 	Rect getBounds() const override;
+    UIType getType() const override { return UIType::Blocking; }
     void draw() const override;
 	void resize(int newWidth, int newHeight) override;
 private:

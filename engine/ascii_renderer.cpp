@@ -3,7 +3,6 @@
 #include <cstring>
 #include <vector>
 #include <string>
-
 #ifdef _WIN32
     #include <conio.h>
     #include <windows.h>
@@ -49,6 +48,7 @@ namespace ascii {
 		    return w.ws_row;
 		#endif
 	}
+
 	void update_terminal_size() {
 		#ifdef _WIN32
 			CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -118,7 +118,7 @@ namespace ascii {
     	}
 	}
 	void render() {
-		#ifdef _WIN32
+			#ifdef _WIN32
 		    COORD coord = {0, 0};
 		    SetConsoleCursorPosition(hOut, coord);
 		#else
@@ -134,83 +134,5 @@ namespace ascii {
 	    }
     	std::cout.flush();
 	}
-
-	bool poll_input(char& key, int& mouse_x, int& mouse_y, bool& left_button, bool& got_key, bool& got_mouse) {
-    	char buf[32];
-	    ssize_t n = read(STDIN_FILENO, buf, sizeof(buf));
-    	if (n <= 0) {
-        	got_key = false;
-	        got_mouse = false;
-    	    return false;
-	    }
-
-    	got_key = false;
-	    got_mouse = false;
-
-    	for (ssize_t i = 0; i < n; ++i) {
-			if (buf[i] == 27 && i + 5 < n && buf[i+1] == '[' && buf[i+2] == 'M') {
-            	// Evento ratón
-        	    unsigned char cb = buf[i+3];
-    	        unsigned char cx = buf[i+4];
-	            unsigned char cy = buf[i+5];
-            	left_button = (cb == 32);
-        	    mouse_x = cx - 33;
-    	        mouse_y = cy - 33;
-	            got_mouse = true;
-				// Saltar la secuencia de ratón
-        	    i += 5;
-    	    } else {
-	            // Evento teclado simple (carácter ASCII)
-            	key = buf[i];
-        	    got_key = true;
-    	    }
-	    }
-
-    	return got_key || got_mouse;
-	}
-
-	bool poll_key(char& out) {
-		#ifdef _WIN32
-		    if (_kbhit()) {
-		        out = _getch();
-        		return true;
-		    }
-		    return false;
-		#else
-		    char ch;
-
-		    if (read(STDIN_FILENO, &ch, 1) == 1) {
-        		out = ch;
-		        return true;
-			}
-    		return false;
-		#endif
-	}
-
-	bool poll_mouse(int& mouse_x, int& mouse_y, bool& left_button) {
-	#ifdef _WIN32
-	    // No implementado por simplicidad
-    	return false;
-	#else
-    	char buf[32];
-	    ssize_t n = read(STDIN_FILENO, buf, sizeof(buf));
-    	if (n <= 0) return false;
-
-	    for (ssize_t i = 0; i < n - 5; ++i) {
-    	    if (buf[i] == 27 && buf[i+1] == '[' && buf[i+2] == 'M') {
-	            unsigned char cb = buf[i+3];
-            	unsigned char cx = buf[i+4];
-        	    unsigned char cy = buf[i+5];
-    	        left_button = (cb == 32);
-	            mouse_x = cx - 33;
-            	mouse_y = cy - 33;
-        	    return true;
-    	    }
-	    }
-    	return false;
-	#endif
-	}
-
-
 
 } // namespace ascii

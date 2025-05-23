@@ -1,8 +1,9 @@
 #ifndef UI_COMPONENT_HPP
 #define UI_COMPONENT_HPP
 #include "rect.hpp"
-namespace ui {
+#include "ui_type.hpp"
 
+namespace ui {
 class UIComponent {
 public:
     virtual ~UIComponent() = default;
@@ -16,6 +17,8 @@ public:
     virtual int getHeight() const = 0;
 	virtual Rect getBounds() const = 0;
 	virtual void resize(int newWidth, int newHeight) = 0;
+	virtual UIType getType() const = 0; 
+
 };
 
 } // namespace ui

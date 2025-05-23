@@ -5,6 +5,8 @@
 #include "projectile.hpp"
 #include "ui_layer.hpp"
 #include "engine/ui/ui_manager.hpp"
+#include "engine/ui/rect.hpp"
+
 GameWorld::GameWorld() {
 	generateTerrain();
 }
@@ -40,8 +42,10 @@ int GameWorld::getMapWidth() const { return MAP_WIDTH; }
 int GameWorld::getMapHeight() const { return MAP_HEIGHT; }
 
 void GameWorld::renderAll(const Player& player) const {
-	const int VIEW_WIDTH = ascii::WIDTH;
-	const int VIEW_HEIGHT = ascii::HEIGHT;
+	Rect render_area = ui_layer::get_render_area_component();
+	ui::add_log("world_renderALL: x"+std::to_string(render_area.x)+" y"+std::to_string(render_area.y)+" w"+std::to_string(render_area.width)+" h"+std::to_string(render_area.height));
+	const int VIEW_WIDTH = render_area.width;
+	const int VIEW_HEIGHT = render_area.height;
 
 	Position playerPos = player.getPosition();
 	// Calcular el offset para centrar la cámara en el jugador
@@ -55,8 +59,8 @@ void GameWorld::renderAll(const Player& player) const {
     if (offsetY > getMapHeight() - VIEW_HEIGHT) offsetY = getMapHeight() - VIEW_HEIGHT;
 
 	// Dibujar suelo
-	for (int y = 0; y < VIEW_HEIGHT; ++y) {
-        for (int x = 0; x < VIEW_WIDTH; ++x) {
+	for (int y = render_area.y; y < VIEW_HEIGHT; ++y) {
+        for (int x = render_area.x; x < VIEW_WIDTH; ++x) {
             int mapX = offsetX + x;
             int mapY = offsetY + y;
 
@@ -64,6 +68,7 @@ void GameWorld::renderAll(const Player& player) const {
             if (mapX >= 0 && mapX < getMapWidth() &&
                 mapY >= 0 && mapY < getMapHeight() && 
 				!ui::is_covered(x, y)) {
+					ui::add_log("entra a dibujar: "+std::to_string(x));
 				char terrainChar = terrainLayer[mapY][mapX];
                 ascii::draw_char(x, y, terrainChar);  // Suelo base
             } else if (!ui::is_covered(x, y)) {

@@ -10,6 +10,10 @@ namespace ui {
 
 	static std::deque<std::string> log_buffer;
 	static std::vector<std::shared_ptr<UIComponent>> components;
+	
+	const std::vector<std::shared_ptr<UIComponent>>& get_components() {
+	    return components;
+	}
 
 	const int MAX_LOG_LINES = 5;
 	
@@ -46,7 +50,15 @@ namespace ui {
 	
 	bool is_covered(int x, int y) {
 	    for (auto& comp : components) {
-        	if (comp->getBounds().contains(x, y)) return true;
+			if (comp->getType() == UIType::RenderArea) {
+	            continue;
+    	    }
+
+        	if (comp->getBounds().contains(x, y)) {
+            	return true;
+        	}
+
+        	//if (comp->getBounds().contains(x, y)) return true;
     	}
     	return false;
 	}
