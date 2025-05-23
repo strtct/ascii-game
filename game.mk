@@ -5,9 +5,10 @@ GAME_OBJ := $(addprefix $(BUILD_DIR)/$(GAME_NAME)/, $(GAME_SRC:.cpp=.o))
 
 GAME_INC := -I. -I$(GAME_DIR)
 GAME_BIN := $(BIN_DIR)/$(GAME_NAME)
+
 # Ejecutable del juego, depende de los objetos y de la librería engine
 $(GAME_BIN): $(GAME_OBJ) $(ENGINE_LIB) | $(BIN_DIR) $(BUILD_DIR)/$(GAME_NAME)
-	$(CXX) $(CXXFLAGS) $(GAME_INC) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(GAME_INC) -o $@ $^ -lsystemd
 
 # Compilar objetos game
 $(BUILD_DIR)/$(GAME_NAME)/%.o: $(GAME_DIR)/%.cpp | $(BUILD_DIR)/$(GAME_NAME)

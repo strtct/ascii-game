@@ -1,27 +1,22 @@
-#pragma once
+#ifndef INPUT_HPP
+#define INPUT_HPP
 
-#include <iostream>
+#include <string>
 
 namespace input {
 
-struct MouseEvent {
-    enum class MouseButton { None, Left, Right, Middle };
-    enum class MouseAction { Press, Release };
+// Inicializa el sistema de entrada abriendo el dispositivo de forma segura usando logind
+void init(const std::string& device_path);
 
-    int x = 0, y = 0;
-    MouseButton button = MouseButton::None;
-    MouseAction action = MouseAction::Press;
-};
-
-void init();
-
+// Libera recursos (cierra el file descriptor y el bus D-Bus)
 void shutdown();
 
-void update_key_state();
+// Lee eventos desde el dispositivo de entrada y actualiza el estado de teclas
+void poll();
 
-bool poll_input(char& key, bool& got_key, MouseEvent& mouse_event, bool& got_mouse);
+// Retorna true si la tecla está actualmente presionada
+bool isKeyPressed(int key_code);
 
-bool is_key_pressed(char key);
+} // namespace input
 
-void update_key_state();
-}
+#endif // INPUT_HPP

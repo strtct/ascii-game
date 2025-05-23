@@ -1,113 +1,144 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <sys/select.h>
-#include <unordered_map>
-#include <chrono>
-#include <iostream>
 #include "input.hpp"
+#include <linux/input.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string>
+#include <cstring>
+#include <map>
+#include <stdexcept>
+#include <systemd/sd-login.h>
+#include <systemd/sd-bus.h>
+#include <iostream>
+#include <sys/stat.h>
+#include <sys/sysmacros.h>
+
 namespace input {
 
-// Estado actual (presionado o no)
-static std::unordered_map<char, bool> key_state;       
-static std::unordered_map<char,std::chrono::steady_clock::time_point> last_press_time;
-// timeout tras el que consideramos que se solto una tecla
-static constexpr auto release_timeout = std::chrono::milliseconds(400);
-static termios original_termios;
+static std::map<int, bool> key_state;
+static int input_fd = -1;
+static sd_bus* bus = nullptr;
 
-void init() {
-    termios t;
-    tcgetattr(STDIN_FILENO, &original_termios);
-    t = original_termios;
-    t.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &t);
 
-    int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
-	// activar seguimiento del mouse
-    std::cout << "\x1b[?1000h" << std::flush;
+void init(const std::string& device_path) {
+    int r = sd_bus_open_system(&bus);
+    if (r < 0) {
+        throw std::runtime_error("No se pudo conectar al bus del sistema: " + std::string(strerror(-r)));
+    }
+
+    char* session = nullptr;
+    r = sd_pid_get_session(0, &session);
+    if (r < 0) {
+        throw std::runtime_error("No se pudo obtener la sesión actual: " + std::string(strerror(-r)));
+    }
+
+    // Obtener la ruta del objeto de sesión desde el nombre
+    sd_bus_message* reply = nullptr;
+    sd_bus_error error = SD_BUS_ERROR_NULL;
+    r = sd_bus_call_method(
+        bus,
+        "org.freedesktop.login1",
+        "/org/freedesktop/login1",
+        "org.freedesktop.login1.Manager",
+        "GetSession",
+        &error,
+        &reply,
+        "s",
+        session
+    );
+    if (r < 0) {
+        throw std::runtime_error("No se pudo obtener el objeto de la sesión: " + std::string(error.message));
+    }
+
+    const char* session_path = nullptr;
+    r = sd_bus_message_read(reply, "o", &session_path);
+    if (r < 0) {
+        throw std::runtime_error("No se pudo leer la ruta de la sesión: " + std::string(strerror(-r)));
+    }
+
+    // Intentar tomar control de la sesión
+    sd_bus_message* control_reply = nullptr;
+    sd_bus_error control_error = SD_BUS_ERROR_NULL;
+    r = sd_bus_call_method(
+        bus,
+        "org.freedesktop.login1",
+        session_path,
+        "org.freedesktop.login1.Session",
+        "TakeControl",
+        &control_error,
+        &control_reply,
+        "b",  // parámetro booleano: force (true para forzar el control)
+        1     // true
+    );
+    if (r < 0) {
+        throw std::runtime_error("No se pudo tomar el control de la sesión: " + std::string(control_error.message));
+    }
+    sd_bus_message_unref(control_reply);
+
+    // Obtener major y minor desde stat()
+    struct stat st;
+    if (stat(device_path.c_str(), &st) < 0) {
+        throw std::runtime_error("stat falló en " + device_path);
+    }
+    unsigned major_num = major(st.st_rdev);
+    unsigned minor_num = minor(st.st_rdev);
+
+    std::cout << "session_path " << session_path << std::endl
+              << "minor: " << minor_num << " major: " << major_num << std::endl;
+
+    // Llamar a TakeDevice
+    sd_bus_message* m = nullptr;
+    r = sd_bus_call_method(
+        bus,
+        "org.freedesktop.login1",
+        session_path,
+        "org.freedesktop.login1.Session",
+        "TakeDevice",
+        &error,
+        &m,
+        "uu",
+        major_num,
+        minor_num
+    );
+    free(session);
+
+    if (r < 0) {
+        throw std::runtime_error("Error al llamar a TakeDevice: " + std::string(error.message));
+    }
+
+    int fd = -1;
+    r = sd_bus_message_read(m, "h", &fd);
+    if (r < 0) {
+        throw std::runtime_error("Error al leer file descriptor: " + std::string(strerror(-r)));
+    }
+
+    input_fd = fd;
+    sd_bus_message_unref(m);
 }
-
 void shutdown() {
-	termios t;
-    tcgetattr(STDIN_FILENO, &t);
-	t.c_lflag |= (ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &t);
-	// desactivar seguimiento del mouse
-    std::cout << "\x1b[?1000l" << std::flush;
+    if (input_fd >= 0) {
+        close(input_fd);
+        input_fd = -1;
+    }
+    if (bus) {
+        sd_bus_unref(bus);
+        bus = nullptr;
+    }
 }
 
-bool is_key_pressed(char key) {
-	auto it = key_state.find(key);
+void poll() {
+    if (input_fd < 0) return;
+
+    struct input_event ev;
+    while (read(input_fd, &ev, sizeof(struct input_event)) > 0) {
+        if (ev.type == EV_KEY) {
+            key_state[ev.code] = (ev.value != 0);  // 1 = pulsada, 0 = liberada
+        }
+    }
+}
+
+bool isKeyPressed(int key_code) {
+    auto it = key_state.find(key_code);
     return it != key_state.end() && it->second;
-}
-
-bool poll_input(char& key, bool& got_key, MouseEvent& mouse_event, bool& got_mouse) {
-    got_key = false;
-    got_mouse = false;
-    mouse_event = {};
-
-    fd_set set;
-    struct timeval timeout = { 0, 0 };
-    FD_ZERO(&set);
-    FD_SET(STDIN_FILENO, &set);
-
-    int rv = select(STDIN_FILENO + 1, &set, nullptr, nullptr, &timeout);
-    if (rv <= 0) return false;
-
-    char buf[6] = {0};
-    ssize_t bytes = read(STDIN_FILENO, buf, sizeof(buf));
-    if (bytes <= 0) return false;
-
-    // Mouse event ESC [ M cb cx cy
-    if (bytes == 6 && buf[0] == 27 && buf[1] == '[' && buf[2] == 'M') {
-        unsigned char cb = buf[3];
-        unsigned char cx = buf[4];
-        unsigned char cy = buf[5];
-
-        int button_code = cb & 0b11;
-        bool is_release = cb & (1 << 5);
-
-        mouse_event.x = cx - 33;
-        mouse_event.y = cy - 33;
-        mouse_event.action = is_release ? MouseEvent::MouseAction::Release : MouseEvent::MouseAction::Press;
-
-        switch (button_code) {
-            case 0: mouse_event.button = MouseEvent::MouseButton::Left; break;
-            case 1: mouse_event.button = MouseEvent::MouseButton::Middle; break;
-            case 2: mouse_event.button = MouseEvent::MouseButton::Right; break;
-            default: mouse_event.button = MouseEvent::MouseButton::None; break;
-        }
-
-        got_mouse = true;
-        return true;
-    }
-
-    // Si es una tecla ASCII visible
-    if ((unsigned char)buf[0] >= 32 && (unsigned char)buf[0] <= 126) {
-        key = buf[0];
-        got_key = true;
-		auto now = std::chrono::steady_clock::now();
-
-        key_state[key] = true;
-		last_press_time[key] = now;
-        return true;
-    }
-
-    return false;
-}
-
-
-void update_key_state() {
-
-	auto now = std::chrono::steady_clock::now();
-    for (auto& [k, pressed] : key_state) {
-        if (!pressed) continue;
-        if (now - last_press_time[k] > release_timeout) {
-            key_state[k] = false;
-        }
-    }
-
 }
 
 } // namespace input

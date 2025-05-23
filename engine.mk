@@ -9,6 +9,7 @@ CXX := g++
 CXXFLAGS := -Wall -std=c++17
 AR := ar
 
+
 # La librería depende explícitamente del directorio lib y build/engine
 $(ENGINE_LIB): | $(LIB_DIR) $(BUILD_DIR)/$(ENGINE_NAME)
 $(ENGINE_LIB): $(ENGINE_OBJ)
