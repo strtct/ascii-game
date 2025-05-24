@@ -14,14 +14,14 @@ namespace Direction {
 	};
 
 	extern const Position directions[8] = {
-	    {0, -1, 0},  // UP
-	    {1, -1, 0},  // UP_RIGHT
-	    {1, 0, 0},   // RIGHT
-    	{1, 1, 0},   // DOWN_RIGHT
-	    {0, 1, 0},   // DOWN
-    	{-1, 1, 0},  // DOWN_LEFT
-	    {-1, 0, 0},  // LEFT
-    	{-1, -1, 0}  // UP_LEFT
+		{1, 0, 0},   // RIGHT (sector 0)
+    {1, 1, 0},   // DOWN_RIGHT (sector 1)
+    {0, 1, 0},   // DOWN (sector 2)
+    {-1, 1, 0},  // DOWN_LEFT (sector 3)
+    {-1, 0, 0},  // LEFT (sector 4)
+    {-1, -1, 0}, // UP_LEFT (sector 5)
+    {0, -1, 0},  // UP (sector 6)
+    {1, -1, 0}   // UP_RIGHT (sector 7)
 	};
 }
 #endif

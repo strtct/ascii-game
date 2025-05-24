@@ -10,20 +10,14 @@ using ui::UIComponent;
 
 class PlayerInfoComponent : public UIComponent {
 public:
-    PlayerInfoComponent(int x, int y, int vindex, int width, int height, const Player& player);
+    PlayerInfoComponent(int x, int y, int width, int height, int zindex, int vindex, const Player& player) : UIComponent(x, y, width, height, zindex, vindex), player_(player){}
 
-    int getX() const override;
-    int getY() const override;
-    int getWidth() const override;
-    int getHeight() const override;
-	Rect getBounds() const override;
     void draw() const override;
 	void resize(int newWidth, int newHeight) override;
     UIType getType() const override { return UIType::Blocking; }
 
 private:
-    int x, y, vindex,width, height;
-    const Player& player;
+    const Player& player_;
 };
 
 

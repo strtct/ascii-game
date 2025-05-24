@@ -15,8 +15,9 @@ public:
 	// Setters	
     virtual void setPosition(const Position& position) { position_ = position; }
 	virtual void setFacingDirection(const Position& dir) {facingDirection_=dir; }
-    //virtual void update(GameWorld&) = 0;
+    //virtual void update(GameWorld&);
     virtual void render() const = 0;
+    //virtual void update() const;
 	// Logic
     virtual void takeDamage(int) = 0;
 	virtual void move(int dx, int dy, float dz, const GameWorld& world);
@@ -24,7 +25,7 @@ public:
     virtual ~Entity() = default;
 protected:
 	const std::string name_;
+	const char renderChar_;
 	Position position_;
 	Position facingDirection_;
-	const char renderChar_;
 };

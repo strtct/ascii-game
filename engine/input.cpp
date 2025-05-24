@@ -56,7 +56,6 @@ void poll_keyboard() {
 				key_pressed_once[ev.code] = true;
 			}
         }
-		ui::add_log("Entra tecla");
         key_state[ev.code] = (ev.value != 0);  // 1 = key down, 0 = key up
     }
 }

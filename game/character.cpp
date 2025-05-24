@@ -5,16 +5,15 @@
 #include "entity.hpp"
 
 Character::Character(
-	const std::string& name, const char renderChar, int level, 
-	const Position& position, 
-	const Position& facingDirection, int strength, int intelligence, 
+	const std::string& name, const char renderChar,
+	const Position& position, const Position& facingDirection, 
+	int level, int strength, int intelligence, 
 	int agility, int dexterity, int vitality, int currentHealth, int maxHealth, int currentMana, int maxMana)
     : Entity(
 		name, renderChar, position, facingDirection
 	), 
 		level_(level),
-      	strength_(strength), dexterity_(dexterity), agility_(agility),
-      	vitality_(vitality), intelligence_(intelligence),
+      	strength_(strength), intelligence_(intelligence), agility_(agility), dexterity_(dexterity),	vitality_(vitality),
       	currentHealth_(maxHealth), maxHealth_(maxHealth), 
 		currentMana_(maxMana), maxMana_(maxMana) {}
 

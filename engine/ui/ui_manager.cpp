@@ -43,6 +43,12 @@ namespace ui {
 	}
 	
 	void draw_all() {
+		std::sort(
+			components.begin(), components.end(),
+		    [](const auto& a, const auto& b) {
+    	    	return a->getZIndex() < b->getZIndex();
+	    	}
+		);
 	    for (auto& comp : components) {
         	comp->draw();
     	}

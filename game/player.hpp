@@ -19,6 +19,7 @@ public:
 	
     bool castSpell(const Spell& spell, GameWorld& world) override;
 	void render() const override;
+	//void update() const;
 private:
     // Métodos internos de cálculo
     int calculateMaxHealth(int level, int vitality) const;

@@ -94,7 +94,7 @@ void GameWorld::renderAll(const Player& player) const {
     for (int y = 0; y < MAP_HEIGHT; ++y) {
         for (int x = 0; x < MAP_WIDTH; ++x) {
             	int r = rand() % 100;
-        	    if (r < 5) terrainLayer[y][x] = ',';   // 5%
+        	    if (r < 1) terrainLayer[y][x] = ',';   // 5%
     	        else if (r < 2) terrainLayer[y][x] = '\''; // 5%
 	            else if (r < 4) terrainLayer[y][x] = '`';  // 5%
 	            else if (r < 6) terrainLayer[y][x] = '~';  // 5%

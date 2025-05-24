@@ -9,7 +9,7 @@ Player::Player(
 	const std::string& name, const char renderChar, int level,  
 	const Position& position, const Position& facingDirection, int strength, 
 	int intelligence, int agility, int dexterity, int vitality)
-    : Character(name, renderChar, level, position, facingDirection, strength, intelligence, agility, dexterity, vitality, calculateMaxHealth(level, vitality), calculateMaxHealth(level, vitality), calculateMaxMana(level, intelligence), calculateMaxMana(level, intelligence))
+    : Character(name, renderChar, position, facingDirection, level, strength, intelligence, agility, dexterity, vitality, calculateMaxHealth(level, vitality), calculateMaxHealth(level, vitality), calculateMaxMana(level, intelligence), calculateMaxMana(level, intelligence))
 {
 }
 
@@ -34,6 +34,6 @@ bool Player::castSpell(const Spell& spell, GameWorld& world) {
     }
 }
 void Player::render() const {
-    ascii::draw_char(position_.x, position_.y, '@'); 
 }
-
+//void Player::update() const {
+//}

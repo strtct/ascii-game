@@ -5,8 +5,12 @@
 #endif
 namespace math {
 
-	Position getDirectionFromDelta(int mousex, int mousey, int playerx, int playery) {
+	Position getDirectionFromDelta(int mousex, int mousey, int playerx, int playery, int mapWidth, int mapHeight) {
 		// delta.x, delta.y enteros (ej. diferencia de columnas y filas)
+		//int offsetX = playerx - (mapWidth / 2);
+		//int offsetY = playery - (mapHeight / 2);
+		//int mouse_world_x = mousex + offsetX;
+		//int mouse_world_y = mousey + offsetY;
 		int dx = mousex - playerx;
 		int dy = mousey - playery;
 

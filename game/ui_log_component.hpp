@@ -8,17 +8,11 @@
 
 class LogComponent : public ui::UIComponent {
 public:
-    LogComponent(int x, int y, int vindex, int width, int height, const std::deque<std::string>& log_buffer);
-    int getX() const {return x;};
-    int getY() const {return y;};
-    int getWidth() const {return width;};
-    int getHeight() const {return height;};
-	Rect getBounds() const override;
+    LogComponent(int x, int y, int width, int height, int zindex, int vindex, const std::deque<std::string>& log_buffer) : UIComponent (x, y, width, height, zindex, vindex), log_buffer_(log_buffer){}
     UIType getType() const override { return UIType::Blocking; }
     void draw() const override;
 	void resize(int newWidth, int newHeight) override;
 private:
-    int x, y, vindex, width, height;
     const std::deque<std::string>& log_buffer_;
 };
 

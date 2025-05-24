@@ -18,7 +18,7 @@
 #include <string>
 #include "direction.hpp"
 #include "math/direction_from_delta.hpp"
-
+class RenderAreaComponent;
 int main() {
 
 	GameWorld world;
@@ -50,6 +50,7 @@ int main() {
     bool running = true;
 
 	ui_layer::init_components(player, ui::get_log_buffer());
+	Rect render_area_size = ui_layer::get_render_area_component();
 
     while (running) {
 
@@ -92,7 +93,7 @@ int main() {
 			input::reset_mouse_scroll();
         }
 		Position player_position = player.getPosition();
-		Position direction = math::getDirectionFromDelta(mx, my, player_position.x, player_position.y);
+		Position direction = math::getDirectionFromDelta(mx, my, player_position.x, player_position.y, render_area_size.width, render_area_size.height);
 		player.setFacingDirection(direction);
 		//input::poll();
 		float dx = 0, dy = 0;
@@ -103,7 +104,7 @@ int main() {
     	if (input::isKeyPressed(KEY_D)) dx += speed;
 		if (input::isKeyPressedOnce(KEY_SPACE)) player.castSpell(fireball, world);
 		if (input::isKeyPressedOnce(KEY_ESC)) running = false;
-		
+		//player.update();	
 	    player.move(dx, dy,0,world);  
 		
         // Pequeño retraso para evitar usar 100% CPU

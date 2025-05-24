@@ -8,8 +8,9 @@ class GameWorld;
 class Character : public Entity {
 public:
     Character(
-		const std::string& name, const char renderChar, int level, 
-		const Position& position, const Position& facingDirection, int strength, 
+		const std::string& name, const char renderChar,  
+		const Position& position, const Position& facingDirection, 
+		int level, int strength, 
 		int intelligence, int agility, int dexterity, int vitality, 
 		int currentHealth, int maxHealth, int currentMana, int maxMana
 	);
