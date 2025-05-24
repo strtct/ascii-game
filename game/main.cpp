@@ -16,6 +16,9 @@
 #include <cstdlib>
 #include "/usr/include/linux/input-event-codes.h"
 #include <string>
+#include "direction.hpp"
+#include "math/direction_from_delta.hpp"
+
 int main() {
 
 	GameWorld world;
@@ -37,7 +40,7 @@ int main() {
 
 	ui::init();
     try {
-        input::init("/dev/input/event3");
+        input::init("/dev/input/event3", "/dev/input/event8");
     } catch (const std::exception& e) {
         std::cerr << "Error en input::init(): " << e.what() << std::endl;
 		return 0;
@@ -63,12 +66,35 @@ int main() {
 		//input::MouseEvent me;
 		//input::update_key_state();
 		try {
-		    input::poll();
+		    input::poll_keyboard();
 		} catch (const std::exception& e) {
 		    std::cerr << "Error en input::poll(): " << e.what() << std::endl;
 		    running = false; 
 		}
-		input::poll();
+		try {
+		    input::poll_mouse();
+		} catch (const std::exception& e) {
+			std::string error_msg = e.what();
+			ui::add_log( "Error en input::poll_mouse(): " + error_msg );
+		}
+		int mx = input::g_mouse.x;
+        int my = input::g_mouse.y;
+		if (input::g_mouse.leftPressed) {
+            ui::add_log("Left button is pressed");
+        }
+
+        if (input::g_mouse.scrollVertical != 0) {
+            if (input::g_mouse.scrollVertical > 0)
+                ui::add_log("Scroll UP");
+            else
+                ui::add_log("Scroll DOWN");
+
+			input::reset_mouse_scroll();
+        }
+		Position player_position = player.getPosition();
+		Position direction = math::getDirectionFromDelta(mx, my, player_position.x, player_position.y);
+		player.setFacingDirection(direction);
+		//input::poll();
 		float dx = 0, dy = 0;
 		int speed = 1;
 	    if (input::isKeyPressed(KEY_W)) dy -= speed;

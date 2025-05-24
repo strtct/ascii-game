@@ -43,7 +43,6 @@ int GameWorld::getMapHeight() const { return MAP_HEIGHT; }
 
 void GameWorld::renderAll(const Player& player) const {
 	Rect render_area = ui_layer::get_render_area_component();
-	ui::add_log("world_renderALL: x"+std::to_string(render_area.x)+" y"+std::to_string(render_area.y)+" w"+std::to_string(render_area.width)+" h"+std::to_string(render_area.height));
 	const int VIEW_WIDTH = render_area.width;
 	const int VIEW_HEIGHT = render_area.height;
 
@@ -68,7 +67,6 @@ void GameWorld::renderAll(const Player& player) const {
             if (mapX >= 0 && mapX < getMapWidth() &&
                 mapY >= 0 && mapY < getMapHeight() && 
 				!ui::is_covered(x, y)) {
-					ui::add_log("entra a dibujar: "+std::to_string(x));
 				char terrainChar = terrainLayer[mapY][mapX];
                 ascii::draw_char(x, y, terrainChar);  // Suelo base
             } else if (!ui::is_covered(x, y)) {
