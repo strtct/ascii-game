@@ -1,8 +1,6 @@
 #pragma once
-#include "entity.hpp"
 #include <vector>
 #include "position.hpp"
-#include "player.hpp"
 #include "ui_layer.hpp"
 class Entity;
 class Player;

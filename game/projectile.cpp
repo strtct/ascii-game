@@ -1,45 +1,28 @@
 #include "projectile.hpp"
 #include "gameWorld.hpp"
 #include "engine/ascii_renderer.cpp"
-//Projectile::Projectile(Position pos, Position velocity, int damage, int range, Team team)
-Projectile::Projectile(Position pos, Position velocity, int damage, int range)
-//    : position(pos), velocity(velocity), damage(damage), remainingRange(range), team(team) {}
-    : position(pos), velocity(velocity), damage(damage), remainingRange(range) {}
 
-Position Projectile::getPosition() const {
-    return position;
-}
+Projectile::Projectile(const std::string& name, const char renderChar, Position position, Position velocity, int damage, int range)
+    : Entity(name, renderChar, position, position), velocity_(velocity), damage_(damage), remainingRange_(range) {}
 
-void Projectile::setPosition(const Position& pos) {
-    position = pos;
-}
-
-//Team Projectile::getTeam() const {
-//    return team;
-//}
 
 void Projectile::update(GameWorld& world) {
-    if (remainingRange-- <= 0) {
+    if (remainingRange_-- <= 0) {
         world.removeEntity(this);
         return;
     }
 
-    Position next = position + velocity;
+    Position next = position_ + velocity_;
     Entity* hit = world.getEntityAt(next);
 
-    //if (hit && hit->getTeam() != team) {
     if (hit) {
-        hit->takeDamage(damage);
-        world.removeEntity(this); // impacta y desaparece
+        hit->takeDamage(damage_);
+        world.removeEntity(this);
     } else {
-        position = next;
+        position_ = next;
     }
 }
 void Projectile::render() const {
-    ascii::draw_char(position.x, position.y, getRenderChar());
+    ascii::draw_char(position_.x, position_.y, getRenderChar());
 }
-char Projectile::getRenderChar() const {
-    return '*';  // símbolo para el proyectil
-}
-
 

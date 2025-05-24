@@ -7,22 +7,16 @@ class GameWorld;
 class Projectile : public Entity {
 public:
     //Projectile(Position pos, Position velocity, int damage, int range, Team team);
-    Projectile(Position pos, Position velocity, int damage, int range);
+    Projectile(const std::string& name, const char renderChar, Position position, Position velocity, int damage, int range);
 
     void update(GameWorld& world);
 	void render() const override;
-    char getRenderChar() const override; 
-    // Overrides de Entity
-    Position getPosition() const override;
-    void setPosition(const Position&) override;
-    //Team getTeam() const override;
     void takeDamage(int) override {} // no-op
 
 private:
-    Position position;
-    Position velocity;
-    int damage;
-    int remainingRange;
-	int traveled = 0;
+    Position velocity_;
+    int damage_;
+    int remainingRange_;
+	int traveled_ = 0;
     //Team team;
 };

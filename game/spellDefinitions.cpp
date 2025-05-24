@@ -1,5 +1,5 @@
 #include "spellDefinitions.hpp"
-#include "fireballSpell.h"
+#include "fireballSpell.hpp"
 
 std::vector<std::shared_ptr<Spell>> SpellDefinitions::AllSpells;
 

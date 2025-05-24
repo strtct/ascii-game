@@ -8,13 +8,14 @@
 #include "player.hpp"
 #include "position.hpp"
 #include "gameWorld.hpp"
-#include "fireballSpell.h"
+#include "fireballSpell.hpp"
 #include "ui_layer.hpp"
 #include <csignal>
 #include <termios.h>
 #include <unistd.h>
 #include <cstdlib>
 #include "/usr/include/linux/input-event-codes.h"
+#include <string>
 int main() {
 
 	GameWorld world;
@@ -28,7 +29,7 @@ int main() {
     float centerZ = 0.0f;
     Position centerPos(centerX, centerY, centerZ);
 
-	Player player ("Stratcat", 1, 10, 22, 10, 14, 14, centerPos);
+	Player player ("Stratcat", '@', 1, centerPos, {1,0}, 10, 22, 10, 14, 14);
     FireballSpell fireball; 
 	ascii::init();
 

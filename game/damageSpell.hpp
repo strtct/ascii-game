@@ -1,6 +1,6 @@
 #pragma once
 
-#include "spell.h"
+#include "spell.hpp"
 
 class DamageSpell : public Spell {
 public:

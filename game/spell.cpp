@@ -1,4 +1,4 @@
-#include "spell.h"
+#include "spell.hpp"
 
 Spell::Spell(const std::string& name, int manaCost, int range)
     : name(name), manaCost(manaCost), range(range) {}
