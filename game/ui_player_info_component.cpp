@@ -5,6 +5,7 @@
 #include "engine/ui/ui_manager.hpp"
 
 void PlayerInfoComponent::draw() const {
+	
 	// Dibujar borde superior e inferior
 	for (int xPos = x_; xPos < x_ + width_; ++xPos) {
 		ascii::draw_char(xPos, y_, '-');
@@ -30,7 +31,9 @@ void PlayerInfoComponent::draw() const {
 	int facing_y = player_.getFacingDirection().y;
 	int facing_z = player_.getFacingDirection().z;
 	int columnWidth = width_ / 3;
-
+	
+	// sólo para depuración
+	
 	// Coordenadas base de cada columna
     int col1X = 1;
 	int col2X = columnWidth + 1;

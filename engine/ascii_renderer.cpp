@@ -3,6 +3,8 @@
 #include <cstring>
 #include <vector>
 #include <string>
+#include <linux/fb.h>
+#include <cstdio> 
 #ifdef _WIN32
     #include <conio.h>
     #include <windows.h>
@@ -12,19 +14,18 @@
     #include <fcntl.h>
 	#include <sys/ioctl.h>
 #endif
-
 namespace ascii {
 	int WIDTH = 80;
 	int HEIGHT = 24;
-
-
+	
 	//static char buffer[HEIGHT][WIDTH];
-	static std::vector<std::vector<char>> buffer;
+	static std::vector<std::vector<Cell>> buffer;
 	#ifdef _WIN32
 		static HANDLE hOut;
 	#else
 		static struct termios oldt;
 	#endif
+
 
 	int get_terminal_width() {
 		#ifdef _WIN32
@@ -67,7 +68,7 @@ namespace ascii {
 		// Redimensionar buffer para el nuevo tamaño:
     	buffer.resize(HEIGHT);
     	for (auto& row : buffer) {
-	        row.resize(WIDTH, ' ');
+	        row.resize(WIDTH, {' ', "\033[0m"});
 		}
 
 		clear();
@@ -104,17 +105,18 @@ namespace ascii {
 	}
 
 	void clear() {
+		Cell empty_cell(' ', ascii::Color::RESET);
 	    for (int y = 0; y < HEIGHT; ++y)
-			std::fill(buffer[y].begin(), buffer[y].end(), ' ');
+			std::fill(buffer[y].begin(), buffer[y].end(), empty_cell);
 	}
 
-	void draw_char(int x, int y, char c) {
+	void draw_char(int x, int y, char c, const std::string& color) {
 	    if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
-    	    buffer[y][x] = c;
+    	    buffer[y][x] = {c, color};
 	}
-	void draw_text(int x, int y, const std::string& text) {
+	void draw_text(int x, int y, const std::string& text, const std::string& color) {
 	    for (size_t i = 0; i < text.size(); ++i) {
-        	draw_char(x + i, y, text[i]);
+        	draw_char(x + i, y, text[i], color);
     	}
 	}
 	void render() {
@@ -124,15 +126,22 @@ namespace ascii {
 		#else
     		std::cout << "\033[H";
 		#endif
+		
+		std::string last_color="";
 
     	for (int y = 0; y < HEIGHT; ++y) {
 	        for (int x = 0; x < WIDTH; ++x) {
-        	    std::cout << buffer[y][x];
+				const Cell& cell = buffer[y][x];
+				if (cell.color != last_color) {
+        	    	std::cout << cell.color;
+					last_color = cell.color;
+				}
+				std::cout << cell.c;
 			}
 			if (y < HEIGHT -1)
    		    	std::cout << '\n';
 	    }
-    	std::cout.flush();
+    	std::cout << Color::RESET << std::flush;
 	}
 
 } // namespace ascii

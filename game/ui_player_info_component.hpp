@@ -5,7 +5,6 @@
 #include "player.hpp"
 #include "engine/ui/rect.hpp"
 #include "engine/ui/ui_type.hpp"
-
 using ui::UIComponent;
 
 class PlayerInfoComponent : public UIComponent {

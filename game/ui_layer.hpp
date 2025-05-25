@@ -8,10 +8,10 @@
 class RenderAreaComponent;
 
 class Player;
-
+class GameWorld;
 namespace ui_layer {
 	
-	void init_components(const Player& player, const std::deque<std::string>& log_buffer);
+	void init_components(const Player& player, const std::deque<std::string>& log_buffer, const GameWorld& world);
 	Rect get_render_area_component();
 
 

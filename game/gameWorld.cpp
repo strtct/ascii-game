@@ -41,7 +41,7 @@ void GameWorld::updateAll() {
 int GameWorld::getMapWidth() const { return MAP_WIDTH; }
 int GameWorld::getMapHeight() const { return MAP_HEIGHT; }
 
-void GameWorld::renderAll(const Player& player) const {
+void GameWorld::renderAll(const Player& player) {
 	Rect render_area = ui_layer::get_render_area_component();
 	const int VIEW_WIDTH = render_area.width;
 	const int VIEW_HEIGHT = render_area.height;
@@ -50,12 +50,13 @@ void GameWorld::renderAll(const Player& player) const {
 	// Calcular el offset para centrar la cámara en el jugador
     int offsetX = playerPos.x - VIEW_WIDTH / 2;
     int offsetY = playerPos.y - VIEW_HEIGHT / 2;
-
     // Clamp para que no se salga del mapa
     if (offsetX < 0) offsetX = 0;
     if (offsetY < 0) offsetY = 0;
     if (offsetX > getMapWidth() - VIEW_WIDTH) offsetX = getMapWidth() - VIEW_WIDTH;
     if (offsetY > getMapHeight() - VIEW_HEIGHT) offsetY = getMapHeight() - VIEW_HEIGHT;
+	setOffsetX(offsetX);
+	setOffsetY(offsetY);
 
 	// Dibujar suelo
 	for (int y = render_area.y; y < VIEW_HEIGHT; ++y) {

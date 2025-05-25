@@ -40,7 +40,7 @@ int main() {
 
 	ui::init();
     try {
-        input::init("/dev/input/event3", "/dev/input/event8");
+        input::init("/dev/input/event3", "/dev/input/event15");
     } catch (const std::exception& e) {
         std::cerr << "Error en input::init(): " << e.what() << std::endl;
 		return 0;
@@ -49,8 +49,7 @@ int main() {
 
     bool running = true;
 
-	ui_layer::init_components(player, ui::get_log_buffer());
-	Rect render_area_size = ui_layer::get_render_area_component();
+	ui_layer::init_components(player, ui::get_log_buffer(), world);
 
     while (running) {
 
@@ -93,7 +92,8 @@ int main() {
 			input::reset_mouse_scroll();
         }
 		Position player_position = player.getPosition();
-		Position direction = math::getDirectionFromDelta(mx, my, player_position.x, player_position.y, render_area_size.width, render_area_size.height);
+		Position direction = math::getDirectionFromDelta(mx,my, player_position.x, player_position.y, world.getOffsetX(), world.getOffsetY());
+	
 		player.setFacingDirection(direction);
 		//input::poll();
 		float dx = 0, dy = 0;

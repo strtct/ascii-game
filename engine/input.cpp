@@ -64,6 +64,8 @@ void poll_mouse() {
 
     struct input_event mev;
     ssize_t bytesRead;
+	g_mouse.dx = 0;
+    g_mouse.dy = 0;
 
     while ((bytesRead = read(mouse_fd, &mev, sizeof(mev))) > 0) {
         switch (mev.type) {
@@ -80,10 +82,16 @@ void poll_mouse() {
                 break;
 
             case EV_REL:
-                if (mev.code == REL_WHEEL) {
-                    g_mouse.scrollVertical += mev.value; // +1: up, -1: down
+                if (mev.code == REL_X) {
+                    g_mouse.dx = mev.value;
+                    g_mouse.x += mev.value;
+                } else if (mev.code == REL_Y) {
+                    g_mouse.dy = mev.value;
+                    g_mouse.y += mev.value;
+                } else if (mev.code == REL_WHEEL) {
+                    g_mouse.scrollVertical += mev.value;
                 } else if (mev.code == REL_HWHEEL) {
-                    g_mouse.scrollHorizontal += mev.value; // +1: right, -1: left
+                    g_mouse.scrollHorizontal += mev.value;
                 }
                 break;
 

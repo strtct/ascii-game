@@ -11,7 +11,7 @@
 
 namespace ui_layer {
 	std::shared_ptr<RenderAreaComponent> renderArea;
-	void init_components(const Player& player, const std::deque<std::string>& log_buffer) {
+	void init_components(const Player& player, const std::deque<std::string>& log_buffer, const GameWorld& world) {
 		
 		renderArea = std::make_shared<RenderAreaComponent>(
 			0, 0, int(ascii::WIDTH), int(ascii::HEIGHT) - 13, 0,
@@ -28,7 +28,7 @@ namespace ui_layer {
 		auto crosshair = std::make_shared<CrosshairComponent>(
 			player.getPosition().x + player.getFacingDirection().x,
 			player.getPosition().y + player.getFacingDirection().y,
-			1, 1, 4, 0, player, renderArea
+			1, 1, 4, 0, player, world
 		);
 		ui::add_component(renderArea);
 		ui::add_component(logComponent);
