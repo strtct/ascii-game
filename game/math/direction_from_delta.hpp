@@ -1,21 +1,18 @@
-#include "../direction.hpp"
 #include <cmath>
+#include "world/Direction.hpp"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 namespace math {
 
 	Position getDirectionFromDelta(int mousex, int mousey, int playerx, int playery, int offsetX, int offsetY) {
-		// delta.x, delta.y enteros (ej. diferencia de columnas y filas)
-		//int offsetX = playerx - (mapWidth / 2);
-		//int offsetY = playery - (mapHeight / 2);
 		int mouseworldx = mousex + offsetX;
 		int mouseworldy = mousey + offsetY;
 		int dx = mouseworldx - playerx;
 		int dy = mouseworldy - playery;
 
 		// Si delta es cero, no cambiamos la dirección (o dejamos la actual)
-		if (dx == 0 && dy == 0) return Direction::directions[0];
+		if (dx == 0 && dy == 0) return game::world::directions[0];
 
 		// Convertimos a float para calcular ángulo
 		float angle = std::atan2(dy, dx); // atan2(dy, dx) devuelve ángulo en radianes entre -pi y pi
@@ -25,6 +22,6 @@ namespace math {
 
 		// Dividimos el círculo en 8 sectores (cada uno de pi/4 radianes)
 		int sector = static_cast<int>((angle + M_PI/8) / (M_PI / 4)) % 8;
-    	return Direction::directions[sector];
+    	return game::world::directions[sector];
 };
 }

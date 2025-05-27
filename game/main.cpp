@@ -1,27 +1,39 @@
-#include "engine/ascii_renderer.hpp"
-#include "engine/ui/ui_manager.hpp"
+#include "engine/Renderer.hpp"
+#include "engine/ui/UIManager.hpp"
 
 #include <thread>
 #include <chrono>
 #include <iostream>
-#include "engine/input.hpp"
-#include "player.hpp"
-#include "position.hpp"
-#include "gameWorld.hpp"
-#include "fireballSpell.hpp"
-#include "ui_layer.hpp"
+#include "engine/InputManager.hpp"
+#include "entity/Player.hpp"
+#include "world/Position.hpp"
+#include "world/GameWorld.hpp"
+#include "spell/FireballSpell.hpp"
+#include "ui/UILayer.hpp"
 #include <csignal>
 #include <termios.h>
 #include <unistd.h>
 #include <cstdlib>
 #include "/usr/include/linux/input-event-codes.h"
 #include <string>
-#include "direction.hpp"
+#include "world/Direction.hpp"
 #include "math/direction_from_delta.hpp"
-class RenderAreaComponent;
-int main() {
 
-	GameWorld world;
+class RenderAreaComponent;
+
+//using namespace game;
+
+int main() {
+    engine::Renderer renderer;	
+	renderer.init();
+	
+    engine::ui::UIManager UIManager(renderer);
+    
+	UIManager.init();
+
+
+    game::world::GameWorld world(renderer, UIManager);
+    
 	// Obtenemos el tamaño del mapa desde GameWorld
     int mapWidth = world.getMapWidth();
     int mapHeight = world.getMapHeight();
@@ -30,89 +42,98 @@ int main() {
     int centerX = mapWidth / 2;
     int centerY = mapHeight / 2;
     float centerZ = 0.0f;
-    Position centerPos(centerX, centerY, centerZ);
-
-	Player player ("Stratcat", '@', 1, centerPos, {1,0}, 10, 22, 10, 14, 14);
-    FireballSpell fireball; 
-	ascii::init();
-
+    game::world::Position centerPos(centerX, centerY, centerZ);
+    
+    game::entity::Player player ("Stratcat", '@', 1, centerPos, {1,0}, 10, 22, 10, 14, 14, renderer, world, UIManager);
+    
+    game::ui::UILayer UILayer(renderer, UIManager, world, player);
+    game::spell::FireballSpell fireball;
 	world.addEntity(&player);
-
-	ui::init();
+    
+	UIManager.init();
+    
+	engine::InputManager inputManager;
+    
     try {
-        input::init("/dev/input/event3", "/dev/input/event15");
+        inputManager.init("/dev/input/event3", "/dev/input/event16");
     } catch (const std::exception& e) {
         std::cerr << "Error en input::init(): " << e.what() << std::endl;
 		return 0;
     }
-    atexit(input::shutdown);
-
+    atexit(inputManager.shutdownStatic);
+    
     bool running = true;
 
-	ui_layer::init_components(player, ui::get_log_buffer(), world);
+
+    UILayer.initComponents();
 
     while (running) {
 
-
-		ascii::update_terminal_size();
-		ascii::clear();		
-		ui::resize_all(int(ascii::WIDTH), int(ascii::HEIGHT));
-
+       
+		renderer.updateTerminalSize();
+		renderer.clear();
+        
+		UIManager.resizeAll(renderer.getCols(), renderer.getRows());
+        
 		world.updateAll();
-		world.renderAll(player);
-		ui::draw_all();
-		ascii::render();
+		world.renderAll(player, UILayer.getRenderAreaComponent());
+        
+		UIManager.drawAll();
+		renderer.render();
         // Procesar entrada
-		//input::MouseEvent me;
-		//input::update_key_state();
 		try {
-		    input::poll_keyboard();
+		    inputManager.pollKeyboard();
 		} catch (const std::exception& e) {
 		    std::cerr << "Error en input::poll(): " << e.what() << std::endl;
 		    running = false; 
 		}
 		try {
-		    input::poll_mouse();
+		    inputManager.pollMouse();
 		} catch (const std::exception& e) {
 			std::string error_msg = e.what();
-			ui::add_log( "Error en input::poll_mouse(): " + error_msg );
+			UIManager.addLog( "Error en input::poll_mouse(): " + error_msg );
 		}
-		int mx = input::g_mouse.x;
-        int my = input::g_mouse.y;
-		if (input::g_mouse.leftPressed) {
-            ui::add_log("Left button is pressed");
+        engine::MouseState mouseState = inputManager.getMouseState();
+		int mx = mouseState.x;
+        int my = mouseState.y;
+		if (mouseState.leftPressed) {
+            UIManager.addLog("Left button is pressed");
         }
 
-        if (input::g_mouse.scrollVertical != 0) {
-            if (input::g_mouse.scrollVertical > 0)
-                ui::add_log("Scroll UP");
+        if (mouseState.scrollVertical != 0) {
+            if (mouseState.scrollVertical > 0)
+                UIManager.addLog("Scroll UP");
             else
-                ui::add_log("Scroll DOWN");
+                UIManager.addLog("Scroll DOWN");
 
-			input::reset_mouse_scroll();
+			inputManager.resetMouseScroll();
         }
-		Position player_position = player.getPosition();
+        game::world::Position player_position = player.getPosition();
 		Position direction = math::getDirectionFromDelta(mx,my, player_position.x, player_position.y, world.getOffsetX(), world.getOffsetY());
 	
 		player.setFacingDirection(direction);
-		//input::poll();
-		float dx = 0, dy = 0;
-		int speed = 1;
-	    if (input::isKeyPressed(KEY_W)) dy -= speed;
-    	if (input::isKeyPressed(KEY_S)) dy += speed;
-	    if (input::isKeyPressed(KEY_A)) dx -= speed;
-    	if (input::isKeyPressed(KEY_D)) dx += speed;
-		if (input::isKeyPressedOnce(KEY_SPACE)) player.castSpell(fireball, world);
-		if (input::isKeyPressedOnce(KEY_ESC)) running = false;
-		//player.update();	
-	    player.move(dx, dy,0,world);  
 		
+        float dx = 0, dy = 0;
+		int speed = 1;
+	    if (inputManager.isKeyPressed(KEY_W)) dy -= speed;
+    	if (inputManager.isKeyPressed(KEY_S)) dy += speed;
+	    if (inputManager.isKeyPressed(KEY_A)) dx -= speed;
+    	if (inputManager.isKeyPressed(KEY_D)) dx += speed;
+		if (inputManager.isKeyPressedOnce(KEY_SPACE)) player.castSpell(fireball);
+		if (inputManager.isKeyPressedOnce(KEY_ESC)) running = false;
+		
+        //player.update();	
+	    
+        player.move(dx, dy,0);  
+		
+
         // Pequeño retraso para evitar usar 100% CPU
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }
-
-    ui::shutdown();
-    ascii::shutdown();
+    
+    UIManager.shutdownStatic();
+   
+    renderer.shutdownStatic();
     //input::shutdown();
     return 0;
 }
